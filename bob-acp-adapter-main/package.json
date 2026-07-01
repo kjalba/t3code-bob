@@ -1,0 +1,43 @@
+{
+  "name": "bobshell-acp",
+  "version": "0.2.0",
+  "description": "Agent Client Protocol (ACP) adapter for Bob Shell to integrate with ACP Clients",
+  "main": "dist/index.js",
+  "bin": {
+    "bobshell-acp": "dist/index.js"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "build:agent": "tsc --project tsconfig.sample.json",
+    "start": "node dist/index.js",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:run": "vitest run"
+  },
+  "keywords": [
+    "acp",
+    "bob-shell",
+    "intellij",
+    "ai-assistant",
+    "json-rpc"
+  ],
+  "author": "",
+  "license": "",
+  "dependencies": {
+    "@agentclientprotocol/sdk": "^0.16.1",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/uuid": "^9.0.8",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.0",
+    "tsx": "^4.7.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

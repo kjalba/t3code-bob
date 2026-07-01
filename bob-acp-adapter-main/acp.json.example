@@ -1,0 +1,17 @@
+{
+  "default_mcp_settings": {
+    "use_custom_mcp": true,
+    "use_idea_mcp": true
+  },
+  "agent_servers": {
+    "Bob Shell": {
+      "command": "/absolute/path/to/bobshell-acp/bobshell-acp.sh",
+      "args": [],
+      "env": {
+        "BOB_PATH": "/absolute/path/to/bobshell",
+        "BOB_LOG_LEVEL": "DEBUG",
+        "BOB_LOG_FILE": "~/bob-acp-adapter.log"
+      }
+    }
+  }
+}

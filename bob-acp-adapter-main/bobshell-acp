@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+
+/**
+ * Bob Shell ACP Adapter - Executable Wrapper
+ * This wrapper ensures the adapter can be executed directly
+ */
+
+import('./dist/index.js').catch((error) => {
+  console.error('Failed to start Bob Shell ACP Adapter:', error);
+  process.exit(1);
+});
