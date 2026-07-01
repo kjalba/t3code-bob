@@ -300,11 +300,7 @@ export const layer = Layer.effect(
           interaction_mode = excluded.interaction_mode,
           creation_source = excluded.creation_source,
           updated_at = excluded.updated_at,
-          next_run_at = excluded.next_run_at,
-          last_run_at = excluded.last_run_at,
-          last_run_status = excluded.last_run_status,
-          last_run_error = excluded.last_run_error,
-          run_count = excluded.run_count
+          next_run_at = excluded.next_run_at
       `.pipe(
         Effect.mapError((cause) =>
           taskError("Could not save schedule task.", { taskId: task.id, cause }),
@@ -379,6 +375,10 @@ export const layer = Layer.effect(
         yield* markRunning(task.id, startedAtIso);
         yield* notifyChanged;
 
+        // Abort if the task was deleted before we could dispatch.
+        const preCheck = yield* findTask(task.id);
+        if (preCheck === null) return task;
+
         const fireKey = `${task.id}:${DateTime.toEpochMillis(startedAt)}:${trigger}`;
         const commandId = CommandId.make(`scheduled-task:${fireKey}`);
         const messageId = MessageId.make(`scheduled-task-message:${fireKey}`);
@@ -448,6 +448,19 @@ export const layer = Layer.effect(
         }
         return completed;
       }).pipe(
+        Effect.tapCause((cause) => {
+          const now = DateTime.nowUnsafe();
+          return markCompleted({
+            id: task.id,
+            completedAtIso: iso(now),
+            nextRunAtIso: nextRunAt(task, now),
+            status: "failed",
+            error: Cause.pretty(cause),
+          }).pipe(
+            Effect.andThen(notifyChanged),
+            Effect.catch(() => Effect.void),
+          );
+        }),
         Effect.ensuring(
           Ref.update(activeRuns, (active) => {
             const next = new Set(active);

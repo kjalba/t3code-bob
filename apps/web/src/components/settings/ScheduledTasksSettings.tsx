@@ -154,11 +154,11 @@ function scheduleFromDraft(draft: DraftState): ScheduledTaskSchedule {
     const minutes = Math.max(1, Number.parseInt(draft.intervalMinutes, 10) || 1);
     return { type: "interval", everyMs: minutes * 60_000 };
   }
-  const selectedEveryDay = draft.weekdays.size === 0 || draft.weekdays.size === 7;
+  const selectedEveryDay = draft.weekdays.size === 7;
   return {
     type: "fixed_time",
     timeOfDay: draft.timeOfDay || "09:00",
-    ...(selectedEveryDay ? {} : { weekdays: [...draft.weekdays].toSorted() }),
+    ...(selectedEveryDay || draft.weekdays.size === 0 ? {} : { weekdays: [...draft.weekdays].toSorted() }),
   };
 }
 
@@ -644,8 +644,10 @@ export function ScheduledTasksSettings() {
                           onClick={() =>
                             setDraft((current) => {
                               const weekdays = new Set(current.weekdays);
-                              if (weekdays.has(day)) weekdays.delete(day);
-                              else weekdays.add(day);
+                              if (weekdays.has(day)) {
+                                if (weekdays.size <= 1) return current;
+                                weekdays.delete(day);
+                              } else weekdays.add(day);
                               return { ...current, weekdays };
                             })
                           }

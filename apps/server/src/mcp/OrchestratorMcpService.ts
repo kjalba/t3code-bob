@@ -831,6 +831,12 @@ const make = Effect.gen(function* () {
             : input.bindToCurrentThread
               ? scope.threadId
               : null;
+        const workspaceStrategy =
+          input.bindToCurrentThread === undefined
+            ? existing.workspaceStrategy
+            : input.bindToCurrentThread
+              ? { type: "root" as const }
+              : { type: "worktree" as const, baseRef: "main", startFromOrigin: true };
         const upsertInput: ScheduledTaskUpsertInput = {
           id: existing.id,
           title: input.title ?? existing.title,
@@ -839,7 +845,7 @@ const make = Effect.gen(function* () {
           schedule: input.schedule ?? existing.schedule,
           projectId: existing.projectId,
           threadId,
-          workspaceStrategy: existing.workspaceStrategy,
+          workspaceStrategy,
           modelSelection: existing.modelSelection,
           runtimeMode: existing.runtimeMode,
           interactionMode: existing.interactionMode,
